@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "749227446255",
+    "project_id": "book-selling-app-ae029",
+    "storage_bucket": "book-selling-app-ae029.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:749227446255:android:0ad242d1bff54c2230701a",
+        "android_client_info": {
+          "package_name": "com.example.buy_book_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "749227446255-61713cdokj49pq7ai3l4n1hi87570u6o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC2hdzKHA8WaDZID474MreroHQbt5ucQD8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "749227446255-61713cdokj49pq7ai3l4n1hi87570u6o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
