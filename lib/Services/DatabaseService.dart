@@ -2,11 +2,13 @@ import 'dart:async';
 import 'package:buy_book_app/Models/AppUser.dart';
 import 'package:buy_book_app/Models/Status.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 class DatabaseService{
-
-
+  // make this a singleton class
+  DatabaseService._privateConstructor();
+  static final DatabaseService instance = DatabaseService._privateConstructor();
   FirebaseFirestore firestore = FirebaseFirestore.instance;
-
 
 
   Future<Status> signUp(AppUser user) async{
@@ -21,6 +23,8 @@ class DatabaseService{
       if(isSuccessful){
         //successfully Logged In
         print("sucessfully registered");
+        setUserId(user.phone);
+        print("sucessfully user_id stored");
         return Status.Success;
 
       }
@@ -37,6 +41,8 @@ class DatabaseService{
       print(password);
       if(password==passcode){
         print("password is matched");
+        setUserId(id);
+        print("sucessfully user_id stored");
         return Status.Success;
       }else{
         print("password  is not matched");
@@ -50,8 +56,14 @@ class DatabaseService{
 
   }
 
-  Future<Status> signOut(){
-
+  Future<Status> signOut()async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    //Remove String
+    var isSuccessful=await prefs.remove("user_id");
+    if(isSuccessful){
+      return Status.Success;
+    }
+    return Status.Failure;
   }
   Future<bool>addUser(AppUser user) async{
     print("add user is in progress");
@@ -62,6 +74,18 @@ class DatabaseService{
       return false;
     }
     return true;
+  }
+
+  Future<bool>setUserId(String userId)async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var result=await prefs.setString("user_id",userId);
+    return result;
+  }
+
+  Future<String>getUserId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String userId = prefs.getString('user_id') ?? '0';
+    return userId;
   }
 
 

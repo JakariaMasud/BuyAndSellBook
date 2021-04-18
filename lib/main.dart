@@ -1,4 +1,5 @@
 
+import 'package:buy_book_app/Screens/AddBookScreen.dart';
 import 'package:buy_book_app/Screens/HomeScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +26,8 @@ class MyApp extends StatelessWidget {
       routes: {
         LoginScreen.routeName:(context)=>LoginScreen(),
         SignUpScreen.routeName: (context)=>SignUpScreen(),
-        HomeScreen.routeName:(context)=>HomeScreen()
+        HomeScreen.routeName:(context)=>HomeScreen(),
+        AddBookScreen.routeName:(context)=>AddBookScreen(),
       },
     );
   }
