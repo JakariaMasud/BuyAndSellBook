@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:buy_book_app/Models/AppUser.dart';
+import 'package:buy_book_app/Models/Book.dart';
 import 'package:buy_book_app/Models/Status.dart';
+import 'package:buy_book_app/Services/StorageService.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -82,11 +85,53 @@ class DatabaseService{
     return result;
   }
 
+  Future<void>addBook(Book book,File file)async{
+
+    final userId=await getUserId();
+    CollectionReference userBookReference = firestore.collection('users').doc(userId).collection('books');
+    final bookId=userBookReference.doc().id;
+    final coverLink=await StorageService.instance.uploadCover(file, '$bookId .jpg');
+    print(coverLink);
+    userBookReference.doc(bookId).set({
+      'id':bookId,
+      'author':book.author,
+      'title':book.title,
+      'publisher':book.publisher,
+      'genre':book.genre,
+      'edition':book.edition,
+      'language':book.language,
+      'price':book.price,
+      'ownerId':userId,
+      'coverLink':coverLink
+    });
+    CollectionReference booksReference = firestore.collection('books');
+    booksReference.doc(bookId).set({
+      'id':bookId,
+      'author':book.author,
+      'title':book.title,
+      'publisher':book.publisher,
+      'genre':book.genre,
+      'edition':book.edition,
+      'language':book.language,
+      'price':book.price,
+      'ownerId':userId,
+      'coverLink':coverLink
+    });
+    print("successful ");
+    
+
+  }
+
   Future<String>getUserId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String userId = prefs.getString('user_id') ?? '0';
     return userId;
   }
+
+  Stream<QuerySnapshot>booksStream(){
+    return  FirebaseFirestore.instance.collection('books').snapshots();
+  }
+
 
 
 

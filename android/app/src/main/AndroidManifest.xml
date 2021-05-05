@@ -1,6 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.buy_book_app">
    <application
+       android:requestLegacyExternalStorage="true"
         android:label="buy_book_app"
         android:icon="@mipmap/ic_launcher">
         <activity

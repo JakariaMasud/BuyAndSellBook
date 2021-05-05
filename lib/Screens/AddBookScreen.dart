@@ -1,6 +1,13 @@
 
+import 'dart:io';
+
 import 'package:buy_book_app/Components/CustomTextField.dart';
+import 'package:buy_book_app/Models/Book.dart';
+import 'package:buy_book_app/Screens/HomeScreen.dart';
+import 'package:buy_book_app/Services/DatabaseService.dart';
+import 'package:buy_book_app/Services/ImagePickerService.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AddBookScreen extends StatefulWidget {
   static final  routeName="/addBook";
@@ -18,6 +25,7 @@ class _AddBookScreenState extends State<AddBookScreen> {
   final editionController=TextEditingController();
   final priceController=TextEditingController();
   final isbnController=TextEditingController();
+   File pickedFile;
 
   @override
   Widget build(BuildContext context) {
@@ -48,12 +56,38 @@ class _AddBookScreenState extends State<AddBookScreen> {
                   border: Border.all(color: Colors.blue),
                   borderRadius: BorderRadius.circular(29.0),
                 ),
-                child: Center(child: Text("Select Cover Photo ",style: TextStyle(color: Colors.white),)),
+                child: GestureDetector(
+                  onTap: () async {
+                   pickedFile= await ImagePickerService().pickImage(source: ImageSource.gallery);
+                  },
+                    child: Center(child: Text("Select Cover Photo ",style: TextStyle(color: Colors.white),))),
               ),
                   Spacer(),
                 ],
-              )
+              ),
+              Container(
+                width: size.width*0.9,
+                margin: EdgeInsets.only(bottom: 20.0),
+                child: ElevatedButton(onPressed: ()async{
+                  String title=titleController.text.toString();
+                  String author=authorController.text.toString();
+                  String genre=genreController.text.toString();
+                  String publisher=publisherController.text.toString();
+                  int  numberOfPage=int.parse(numberOfPageController.text.toString());
+                  String language=languageController.text.toString();
+                  String edition=editionController.text.toString();
+                  int  price=int.parse(priceController.text.toString());
+                  if(title.isEmpty || author.isEmpty || genre.isEmpty ||publisher.isEmpty || numberOfPage==0 || language.isEmpty || edition.isEmpty || price==0 || pickedFile==null){
+                    print("Field is not valid");
+                  }else{
+                    Book book=Book(title: title,author: author,genre: genre,publisher: publisher,numberOfPage: numberOfPage,language: language,edition: edition,price: price);
+                    print("file is being uploaded");
+                    await DatabaseService.instance.addBook(book, pickedFile);
+                    Navigator.pushReplacementNamed(context, HomeScreen.routeName);
+                  }
 
+                }, child: Text("Add Book")),
+              )
 
             ],
           ),
