@@ -1,10 +1,19 @@
 
+import 'package:buy_book_app/Components/CircularImage.dart';
+import 'package:buy_book_app/Components/CustomText.dart';
+import 'package:buy_book_app/Models/AppUser.dart';
 import 'package:buy_book_app/Screens/AddBookScreen.dart';
+import 'package:buy_book_app/Screens/ChatScreen.dart';
+import 'package:buy_book_app/Screens/DeskScreen.dart';
+import 'package:buy_book_app/Screens/LoginScreen.dart';
+import 'package:buy_book_app/Screens/ProfileScreen.dart';
+import 'package:buy_book_app/Services/DatabaseService.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class HomeDrawer extends StatelessWidget {
-  HomeDrawer({@required this.userName,@required this.imageLink});
-  String userName,imageLink;
+
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -15,34 +24,45 @@ class HomeDrawer extends StatelessWidget {
             padding: EdgeInsets.all(20.0),
             color: Theme.of(context).primaryColor,
             child: Center(
-              child: Column(
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(top: 25.0,bottom: 10.0),
-                    height: 100,
-                    width: 100,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                        image: NetworkImage(imageLink),fit: BoxFit.fill
-                      )
-                    ),
-                  ),
-                  Text(userName,style: TextStyle(fontSize: 22.0,color: Colors.white),)
-                ],
-
+              child: FutureBuilder<String>(
+                future: DatabaseService.instance.getUserId(),
+                builder: (context, idSnap) {
+                  if(idSnap.connectionState==ConnectionState.done){
+                    return StreamBuilder<DocumentSnapshot>(
+                        stream: DatabaseService.instance.getProfileStream(idSnap.data),
+                        builder: (context,profileSnap){
+                          if(profileSnap.hasData){
+                         final AppUser user= AppUser.fromDocument(profileSnap.data);
+                            return Column(
+                              children: [
+                                user.profilePic==null ? CircularImage():CircularImage(image: user.profilePic,),
+                                CustomText(text: profileSnap.data['name'],textColor: Colors.white,textSize: 22.0,)
+                              ],
+                            );
+                          }else{
+                            return Container();
+                          }
+                        });
+                  }else{
+                    return Container();
+                  }
+                }
               ),
             ),
           ),
           ListTile(
             leading: Icon(Icons.person),
             title: Text("Profile",style: TextStyle(fontSize: 17.0),),
-            onTap: null,
+            onTap: (){
+              Navigator.pushNamed(context, ProfileScreen.routeName);
+            },
           ),
           ListTile(
             leading: Icon(Icons.chat_bubble),
             title: Text("Inbox",style: TextStyle(fontSize: 17.0),),
-            onTap: null,
+            onTap:  (){
+              Navigator.pushNamed(context, ChatScreen.routeName);
+            },
           ),
           ListTile(
             leading: Icon(Icons.add),
@@ -52,20 +72,20 @@ class HomeDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: Icon(Icons.chat_bubble),
-            title: Text("Edit Desk",style: TextStyle(fontSize: 17.0),),
-            onTap: null,
-          ),
-          ListTile(
             leading: Icon(Icons.book),
             title: Text("My Desk",style: TextStyle(fontSize: 17.0),),
-            onTap: null,
+            onTap: (){
+              Navigator.pushNamed(context, DeskScreen.routeName);
+            },
           ),
 
           ListTile(
             leading: Icon(Icons.chat_bubble),
             title: Text("Sign Out",style: TextStyle(fontSize: 17.0),),
-            onTap: null,
+            onTap: () async{
+              await  DatabaseService.instance.signOut();
+              Navigator.pushReplacementNamed(context, LoginScreen.routeName);
+            },
           ),
         ],
       ),

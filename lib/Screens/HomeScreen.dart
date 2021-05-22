@@ -1,4 +1,6 @@
 import 'package:buy_book_app/Components/HomeDrawer.dart';
+import 'package:buy_book_app/Components/PopUpMenu.dart';
+import 'package:buy_book_app/Screens/BookDetailScreen.dart';
 import 'package:buy_book_app/Services/DatabaseService.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +18,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Home"),
+        actions: [
+          PopUpMenu()
+        ],
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: DatabaseService.instance.booksStream(),
@@ -30,24 +35,29 @@ class _HomeScreenState extends State<HomeScreen> {
             children: snapshot.data.docs.map((document) {
               return Container(
                 margin: EdgeInsets.all(10.0),
-                child: Card(
-                 elevation: 5.0,
-                  child: Row(
-                    children: [
-                      Container(
-                        height: 150,
-                        width: 150,
-                        child: Image.network(document['coverLink']),
-                      ),
-                      Column(
-                        children: [
-                          Text(document['title']),
-                          Text('Author : ${document['author']} '),
-                          Text('Publisher : ${document['publisher']}'),
-                          Text('Price : ${document['price']} Taka')
-                        ],
-                      )
-                    ],
+                child: GestureDetector(
+                  onTap: (){
+                    Navigator.pushNamed(context, BookDetailScreen.routeName,arguments: document['id']);
+                  },
+                  child: Card(
+                   elevation: 5.0,
+                    child: Row(
+                      children: [
+                        Container(
+                          height: 150,
+                          width: 150,
+                          child: Image.network(document['coverLink']),
+                        ),
+                        Column(
+                          children: [
+                            Text(document['title']),
+                            Text('Author : ${document['author']} '),
+                            Text('Publisher : ${document['publisher']}'),
+                            Text('Price : ${document['price']} Taka')
+                          ],
+                        )
+                      ],
+                    ),
                   ),
                 ),
               );
@@ -55,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         }
       }),
-      drawer: HomeDrawer(userName: "John Doe",imageLink: "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"),
+      drawer: HomeDrawer(),
 
     );
   }

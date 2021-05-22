@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:buy_book_app/Models/AppUser.dart';
 import 'package:buy_book_app/Models/Book.dart';
+import 'package:buy_book_app/Models/ChatMessage.dart';
 import 'package:buy_book_app/Models/Status.dart';
 import 'package:buy_book_app/Services/StorageService.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -39,7 +40,7 @@ class DatabaseService{
     if(documentSnapshot.exists){
       //User Exist now check the password
       print("document is exist");
-      String passcode=documentSnapshot.data()['password'];
+      String passcode=documentSnapshot.get('password');
       print(passcode);
       print(password);
       if(password==passcode){
@@ -102,7 +103,8 @@ class DatabaseService{
       'language':book.language,
       'price':book.price,
       'ownerId':userId,
-      'coverLink':coverLink
+      'coverLink':coverLink,
+      'numberOfPage':book.numberOfPage
     });
     CollectionReference booksReference = firestore.collection('books');
     booksReference.doc(bookId).set({
@@ -115,10 +117,22 @@ class DatabaseService{
       'language':book.language,
       'price':book.price,
       'ownerId':userId,
-      'coverLink':coverLink
+      'coverLink':coverLink,
+      'numberOfPage':book.numberOfPage
     });
     print("successful ");
     
+
+  }
+  Future<void>updateProfilePic(File pickedFile) async {
+    String userId=await getUserId();
+    final imageUrl=await StorageService.instance.uploadProfilePic(pickedFile, '$userId .jpg');
+    DocumentReference userReference = firestore.collection('users').doc(userId);
+    await userReference.update({
+      "profilePic":imageUrl
+    });
+    print('profilePic Updated');
+
 
   }
 
@@ -127,9 +141,28 @@ class DatabaseService{
     String userId = prefs.getString('user_id') ?? '0';
     return userId;
   }
+  Future<void>sendMsg(String sender,String receiver,ChatMessage message)async {
+    CollectionReference senderCollection=firestore.collection('chats').doc(sender).collection(receiver);
+    CollectionReference receiverCollection=firestore.collection('chats').doc(receiver).collection(sender);
+    await senderCollection.add(message.toMap());
+    await receiverCollection.add(message.toMap());
+  }
+
 
   Stream<QuerySnapshot>booksStream(){
-    return  FirebaseFirestore.instance.collection('books').snapshots();
+    return  firestore.collection('books').snapshots();
+  }
+  Stream<DocumentSnapshot>getBookStream(String bookId){
+    return firestore.collection('books').doc(bookId).snapshots();
+  }
+  Stream <DocumentSnapshot>getProfileStream(String id){
+    return firestore.collection('users').doc(id).snapshots();
+  }
+  Stream<QuerySnapshot>deskStream(String id){
+    return firestore.collection('users').doc(id).collection('books').snapshots();
+  }
+  Stream<QuerySnapshot>messageStream(String sender,String receiver){
+    return firestore.collection('chats').doc(sender).collection(receiver).orderBy('time').limit(10).snapshots();
   }
 
 

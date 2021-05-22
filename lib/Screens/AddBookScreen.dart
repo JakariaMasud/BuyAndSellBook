@@ -1,7 +1,7 @@
 
 import 'dart:io';
-
 import 'package:buy_book_app/Components/CustomTextField.dart';
+import 'package:buy_book_app/Components/PopUpMenu.dart';
 import 'package:buy_book_app/Models/Book.dart';
 import 'package:buy_book_app/Screens/HomeScreen.dart';
 import 'package:buy_book_app/Services/DatabaseService.dart';
@@ -16,6 +16,7 @@ class AddBookScreen extends StatefulWidget {
 }
 
 class _AddBookScreenState extends State<AddBookScreen> {
+
   final titleController=TextEditingController();
   final authorController=TextEditingController();
   final publisherController=TextEditingController();
@@ -29,9 +30,13 @@ class _AddBookScreenState extends State<AddBookScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     Size size=MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(title: Text("Add a Book"),),
+      appBar: AppBar(title: Text("Add a Book"),
+      actions: [
+        PopUpMenu()
+      ],),
       body: SingleChildScrollView(
         child: Center(
           child: Column(
@@ -58,7 +63,7 @@ class _AddBookScreenState extends State<AddBookScreen> {
                 ),
                 child: GestureDetector(
                   onTap: () async {
-                   pickedFile= await ImagePickerService().pickImage(source: ImageSource.gallery);
+                   pickedFile= ImagePickerService.instance.pickImage(source: ImageSource.gallery) as File;
                   },
                     child: Center(child: Text("Select Cover Photo ",style: TextStyle(color: Colors.white),))),
               ),

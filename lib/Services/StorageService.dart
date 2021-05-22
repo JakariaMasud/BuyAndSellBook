@@ -13,4 +13,10 @@ class StorageService{
    await uploadTask.whenComplete(() async=> downloadUrl=await uploadTask.snapshot.ref.getDownloadURL());
    return downloadUrl;
   }
+  Future <String> uploadProfilePic(File file,String fileName) async{
+    String downloadUrl;
+    final uploadTask=  storage.ref('profilePic/$fileName').putFile(file);
+    await uploadTask.whenComplete(() async=> downloadUrl=await uploadTask.snapshot.ref.getDownloadURL());
+    return downloadUrl;
+  }
 }

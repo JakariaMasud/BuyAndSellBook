@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class AppUser{
   String name,phone,email,password,profilePic,designation,id;
 
@@ -7,13 +9,25 @@ class AppUser{
   Map<String,dynamic> toMap(){
     return {
       "id":id,
-    "name":name,
+      "name":name,
       "phone":phone,
       "email":email,
-      "password":profilePic,
+      "profilePic":profilePic,
       "designation":designation,
       "password":password
 
     };
+  }
+  factory AppUser.fromDocument(DocumentSnapshot doc){
+    return AppUser(
+      id: doc['id'],
+      name: doc['name'],
+      phone: doc['phone'],
+      email: doc['email'],
+      profilePic: doc['profilePic'],
+      designation: doc['designation'],
+      password: doc['password']
+
+    );
   }
 }

@@ -62,7 +62,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               String name=nameController.text.toString();
               String designation=designationController.text.toString();
               String phone=phoneController.text.toString();
-              AppUser user=AppUser(id:phone,name: name,phone:phone,email: email,designation: designation,password: password);
+              AppUser user=AppUser(id:phone,name: name,phone:phone,email: email,designation: designation,password: password,profilePic: null);
               var  status=await DatabaseService.instance.signUp(user);
               print("sucessfully returned ${status.toString()}");
               switch(status) {
