@@ -35,6 +35,7 @@ class _MessageScreenState extends State<MessageScreen> {
               stream: DatabaseService.instance.messageStream(args.senderId, args.receiverId),
               builder: (context, messageSnapshot) {
                 if(messageSnapshot.hasData){
+
                   return Column(
                     children: [
                       ListView(

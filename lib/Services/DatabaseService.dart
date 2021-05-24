@@ -142,12 +142,13 @@ class DatabaseService{
     return userId;
   }
   Future<void>sendMsg(String sender,String receiver,ChatMessage message)async {
-    CollectionReference senderCollection=firestore.collection('chats').doc(sender).collection(receiver);
-    CollectionReference receiverCollection=firestore.collection('chats').doc(receiver).collection(sender);
-    await senderCollection.add(message.toMap());
-    await receiverCollection.add(message.toMap());
+    DocumentReference senderRef= firestore.collection('users').doc(sender).collection('chatList').doc(receiver);
+    await senderRef.set({"data":123});
+    DocumentReference receiverRef=firestore.collection('users').doc(receiver).collection('chatList').doc(sender);
+    await receiverRef.set({"data":456});
+    await senderRef.collection('messages').add(message.toMap());
+    await receiverRef.collection('messages').add(message.toMap());
   }
-
 
   Stream<QuerySnapshot>booksStream(){
     return  firestore.collection('books').snapshots();
@@ -162,8 +163,15 @@ class DatabaseService{
     return firestore.collection('users').doc(id).collection('books').snapshots();
   }
   Stream<QuerySnapshot>messageStream(String sender,String receiver){
-    return firestore.collection('chats').doc(sender).collection(receiver).orderBy('time').limit(10).snapshots();
+    return firestore.collection('users').doc(sender).collection('chatList').doc(receiver).collection('messages').orderBy('time').limit(10).snapshots();
   }
+  Stream<QuerySnapshot>lastMessageStream(String sender,String receiver){
+    return firestore.collection('users').doc(sender).collection('chatList').doc(receiver).collection('messages').orderBy('time').limit(1).snapshots();
+  }
+  Stream<QuerySnapshot>chatListStream(String userId){
+    return firestore.collection('users').doc(userId).collection('chatList').snapshots();
+  }
+
 
 
 
