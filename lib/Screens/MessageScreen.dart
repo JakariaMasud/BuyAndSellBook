@@ -3,7 +3,7 @@ import 'package:buy_book_app/Components/CircularImage.dart';
 import 'package:buy_book_app/Components/CustomText.dart';
 import 'package:buy_book_app/Components/ReceiverMessage.dart';
 import 'package:buy_book_app/Components/SenderMessage.dart';
-import 'package:buy_book_app/Models/AppUser.dart';
+import 'package:buy_book_app/Models/User.dart';
 import 'package:buy_book_app/Models/ChatMessage.dart';
 import 'package:buy_book_app/Models/MessageScreenArguments.dart';
 import 'package:buy_book_app/Services/DatabaseService.dart';
@@ -30,7 +30,7 @@ class _MessageScreenState extends State<MessageScreen> {
       stream: DatabaseService.instance.getProfileStream(args.senderId),
       builder: (context, profileSnapshot) {
         if(profileSnapshot.hasData){
-          AppUser appUser=AppUser.fromDocument(profileSnapshot.data);
+          User appUser=User.fromDocument(profileSnapshot.data);
           return  StreamBuilder<QuerySnapshot>(
               stream: DatabaseService.instance.messageStream(args.senderId, args.receiverId),
               builder: (context, messageSnapshot) {
@@ -74,7 +74,7 @@ class _MessageScreenState extends State<MessageScreen> {
       stream: DatabaseService.instance.getProfileStream(receiverId),
         builder: (context,snapshot){
         if(snapshot.hasData){
-          final AppUser user=AppUser.fromDocument(snapshot.data);
+          final User user=User.fromDocument(snapshot.data);
           return Container(
             height: Scaffold.of(context).appBarMaxHeight,
             child: Row(

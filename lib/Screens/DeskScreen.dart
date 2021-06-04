@@ -1,9 +1,10 @@
+import 'package:buy_book_app/Bloc/book_bloc.dart';
+import 'package:buy_book_app/Components/CustomBookList.dart';
 import 'package:buy_book_app/Components/PopUpMenu.dart';
 import 'package:buy_book_app/Models/Book.dart';
-import 'package:buy_book_app/Services/DatabaseService.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:buy_book_app/Screens/EditBookScreen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'BookDetailScreen.dart';
 class DeskScreen extends StatefulWidget {
@@ -15,6 +16,8 @@ class DeskScreen extends StatefulWidget {
 class _DeskScreenState extends State<DeskScreen> {
   @override
   Widget build(BuildContext context) {
+    BlocProvider.of<BookBloc>(context).add(LoadDeskBooks());
+    print("loadDeskBooks is called");
     return Scaffold(
       appBar: AppBar(
         title: Text('My Desk'),
@@ -22,62 +25,47 @@ class _DeskScreenState extends State<DeskScreen> {
           PopUpMenu()
         ],
       ),
-      body: FutureBuilder<String>(
-        future: DatabaseService.instance.getUserId(),
-        builder: (ctx,idSnap){
-          if(idSnap.connectionState!=ConnectionState.done){
-            return SpinKitFadingCircle(
-              color: Colors.blue,
-              size: 50.0,
-            );
+      body: BlocBuilder<BookBloc,BookState>(
+        builder: (context,state){
+          if(state is DeskBooksLoaded){
+          return CustomBookList(bookList: state.deskBooks);
           }else{
-            return StreamBuilder<QuerySnapshot>(
-                stream: DatabaseService.instance.deskStream(idSnap.data),
-                builder: (context,snapshot){
-                  if(!snapshot.hasData){
-                    return SpinKitFadingCircle(
-                      color: Colors.blue,
-                      size: 50.0,
-                    );
-                  }else{
-                    return ListView(
-                      children: snapshot.data.docs.map((document) {
-                        Book book=Book.fromDocument(document);
-                        return Container(
-                          margin: EdgeInsets.all(10.0),
-                          child: GestureDetector(
-                            onTap: (){
-                              Navigator.pushNamed(context, BookDetailScreen.routeName,arguments: book.id);
-                            },
-                            child: Card(
-                              elevation: 5.0,
-                              child: Row(
-                                children: [
-                                  Container(
-                                    height: 150,
-                                    width: 150,
-                                    child: Image.network(book.coverLink),
-                                  ),
-                                  Column(
-                                    children: [
-                                      Text(book.title),
-                                      Text('Author : ${book.author} '),
-                                      Text('Publisher : ${book.publisher}'),
-                                      Text('Price : ${book.price} Taka')
-                                    ],
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    );
-                  }
-                });
+            return Container();
           }
         },
-      )
+      ),
     );
+  }
+  void _showPopupMenu(Book book) async {
+    await showMenu(
+        context: context,
+        position: RelativeRect.fromLTRB(350, 150, 10, 10),
+        items: [
+    PopupMenuItem(
+    value: 1,
+    child: Text("View"),
+    ),
+    PopupMenuItem(
+    value: 2,
+    child: Text("Edit"),
+    ),
+    PopupMenuItem(
+    value: 3,
+    child: Text("Delete"),
+    ),
+    ],
+    elevation: 8.0,
+    ).then((value){
+
+// NOTE: even you didnt select item this method will be called with null of value so you should call your call back with checking if value is not null
+
+    if(value==1){
+      Navigator.pushNamed(context, BookDetailScreen.routeName,arguments: book.id);
+    }else if(value==2){
+      Navigator.push(context, MaterialPageRoute(builder: (context)=>EditBookScreen(book: book)));
+
+    }
+
+    });
   }
 }

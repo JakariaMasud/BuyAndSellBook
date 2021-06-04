@@ -3,48 +3,58 @@ import 'package:buy_book_app/Bloc/book_bloc.dart';
 import 'package:buy_book_app/Components/CustomTextField.dart';
 import 'package:buy_book_app/Components/PopUpMenu.dart';
 import 'package:buy_book_app/Models/Book.dart';
-import 'package:buy_book_app/Screens/HomeScreen.dart';
 import 'package:buy_book_app/Services/DatabaseService.dart';
 import 'package:buy_book_app/Services/ImagePickerService.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
-class AddBookScreen extends StatefulWidget {
-  static final routeName = "/addBook";
+import 'HomeScreen.dart';
+
+class EditBookScreen extends StatefulWidget {
+  static final routeName = "/Edit";
+  Book book;
+
+  EditBookScreen({this.book});
 
   @override
-  _AddBookScreenState createState() => _AddBookScreenState();
+  _EditBookScreenState createState() => _EditBookScreenState();
 }
 
-class _AddBookScreenState extends State<AddBookScreen> {
-  final titleController = TextEditingController();
-  final authorController = TextEditingController();
-  final publisherController = TextEditingController();
-  final genreController = TextEditingController();
-  final numberOfPageController = TextEditingController();
-  final languageController = TextEditingController();
-  final editionController = TextEditingController();
-  final priceController = TextEditingController();
-  final isbnController = TextEditingController();
+class _EditBookScreenState extends State<EditBookScreen> {
+  TextEditingController titleController,
+      authorController,
+      publisherController,
+      genreController,
+      numberOfPageController,
+      languageController,
+      editionController,
+      priceController;
   File pickedFile;
+  bool isCoverChanged = false;
+
+  @override
+  void initState() {
+    super.initState();
+    initController(widget.book);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final String bookId = ModalRoute.of(context).settings.arguments;
     Size size = MediaQuery.of(context).size;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text("Add a Book"),
+        title: Text("Edit Book"),
         actions: [PopUpMenu()],
       ),
       body: BlocListener<BookBloc, BookState>(
         listener: (context, state) {
-          if(state is AddBookSuccess){
-            print("successful add");
+          if (state is UpdateBookSuccess) {
             Navigator.pushReplacementNamed(context, HomeScreen.routeName);
-          }else if(state is AddBookFailed ){
-            print("failed to add");
+          } else if (state is UpdateBookFailed) {
+            print("update failed");
           }
         },
         child: SingleChildScrollView(
@@ -84,7 +94,7 @@ class _AddBookScreenState extends State<AddBookScreen> {
                 CustomTextField(
                     size: size,
                     controller: editionController,
-                    labelText: " Edition",
+                    labelText: "Edition",
                     textInputType: TextInputType.text),
                 CustomTextField(
                     size: size,
@@ -109,11 +119,12 @@ class _AddBookScreenState extends State<AddBookScreen> {
                       child: GestureDetector(
                           onTap: () async {
                             pickedFile = await ImagePickerService.instance
-                                .pickImage(source: ImageSource.gallery) as File;
+                                .pickImage(source: ImageSource.gallery);
+                            isCoverChanged = true;
                           },
                           child: Center(
                               child: Text(
-                            "Select Cover Photo ",
+                            "Change Cover Photo ",
                             style: TextStyle(color: Colors.white),
                           ))),
                     ),
@@ -141,11 +152,10 @@ class _AddBookScreenState extends State<AddBookScreen> {
                             numberOfPage == 0 ||
                             language.isEmpty ||
                             edition.isEmpty ||
-                            price == 0 ||
-                            pickedFile == null) {
-                          print("Field is not valid");
+                            price == 0) {
                         } else {
-                          Book book = Book(
+                          Book updatedBook = Book(
+                              id: widget.book.id,
                               title: title,
                               author: author,
                               genre: genre,
@@ -153,15 +163,16 @@ class _AddBookScreenState extends State<AddBookScreen> {
                               numberOfPage: numberOfPage,
                               language: language,
                               edition: edition,
-                              price: price);
-                          print("file is being uploaded");
-                          await DatabaseService.instance
-                              .addBook(book, pickedFile);
+                              price: price,
+                              coverLink: widget.book.coverLink);
+                          BlocProvider.of<BookBloc>(context).add(UpdateBook(
+                              updatedBook, pickedFile, isCoverChanged));
+                          print("Updated succesfully");
                           Navigator.pushReplacementNamed(
                               context, HomeScreen.routeName);
                         }
                       },
-                      child: Text("Add Book")),
+                      child: Text("Update Book")),
                 )
               ],
             ),
@@ -169,5 +180,17 @@ class _AddBookScreenState extends State<AddBookScreen> {
         ),
       ),
     );
+  }
+
+  void initController(Book book) {
+    titleController = TextEditingController(text: book.title);
+    authorController = TextEditingController(text: book.author);
+    publisherController = TextEditingController(text: book.publisher);
+    genreController = TextEditingController(text: book.genre);
+    numberOfPageController =
+        TextEditingController(text: book.numberOfPage.toString());
+    languageController = TextEditingController(text: book.language);
+    editionController = TextEditingController(text: book.edition);
+    priceController = TextEditingController(text: book.price.toString());
   }
 }

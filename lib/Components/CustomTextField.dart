@@ -6,7 +6,7 @@ class CustomTextField extends StatelessWidget {
     @required this.size,
     @required this.controller,
     this.icon,
-    @required this.hintText,
+    @required this.labelText,
     @required this.textInputType,
     this.obscureText=false
   }) : super(key: key);
@@ -14,7 +14,7 @@ class CustomTextField extends StatelessWidget {
   final Size size;
   final TextEditingController controller;
   final TextInputType textInputType;
-  final String hintText;
+  final String labelText;
   final Icon icon;
   final bool obscureText;
 
@@ -33,17 +33,18 @@ class CustomTextField extends StatelessWidget {
         keyboardType: textInputType,
         controller: controller,
         decoration: InputDecoration(
-            hintText: hintText,
             border: InputBorder.none,
+          labelText: labelText
         ),
       ) :TextField(
         obscureText: obscureText,
         keyboardType: textInputType,
         controller: controller,
         decoration: InputDecoration(
-            hintText: hintText,
+            labelText: labelText,
             border: InputBorder.none,
-            icon:icon
+            icon:icon,
+
         ),
       )
     );

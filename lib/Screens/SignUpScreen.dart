@@ -1,5 +1,5 @@
 import 'package:buy_book_app/Components/CustomTextField.dart';
-import 'package:buy_book_app/Models/AppUser.dart';
+import 'package:buy_book_app/Models/User.dart';
 import 'package:buy_book_app/Models/Status.dart';
 import 'package:buy_book_app/Services/DatabaseService.dart';
 import 'package:flutter/material.dart';
@@ -30,11 +30,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
         child: Center(
           child: Column(
             children: [
-              CustomTextField(size: size, controller: nameController,icon: Icon(Icons.person,color: Colors.blue,),textInputType: TextInputType.name,hintText: "Enter name",),
-              CustomTextField(size: size, controller: emailController,icon: Icon(Icons.email,color: Colors.blue,),textInputType: TextInputType.emailAddress,hintText: "Enter Email",),
-              CustomTextField(size: size, controller: phoneController,icon: Icon(Icons.phone,color: Colors.blue,),textInputType: TextInputType.phone,hintText: "Enter phone Number",),
-              CustomTextField(size: size, controller: designationController,icon: Icon(Icons.work,color: Colors.blue,),textInputType: TextInputType.phone,hintText: "Enter Designation",),
-              CustomTextField(size: size, controller: passwordController,icon: Icon(Icons.lock,color: Colors.blue,),textInputType: TextInputType.text,hintText: "Enter Password",obscureText: true,),
+              CustomTextField(size: size, controller: nameController,icon: Icon(Icons.person,color: Colors.blue,),textInputType: TextInputType.name,labelText: "Enter Name",),
+              CustomTextField(size: size, controller: emailController,icon: Icon(Icons.email,color: Colors.blue,),textInputType: TextInputType.emailAddress,labelText: "Enter Email",),
+              CustomTextField(size: size, controller: phoneController,icon: Icon(Icons.phone,color: Colors.blue,),textInputType: TextInputType.phone,labelText: "Enter phone Number",),
+              CustomTextField(size: size, controller: designationController,icon: Icon(Icons.work,color: Colors.blue,),textInputType: TextInputType.phone,labelText: "Enter Designation",),
+              CustomTextField(size: size, controller: passwordController,icon: Icon(Icons.lock,color: Colors.blue,),textInputType: TextInputType.text,labelText: "Enter Password",obscureText: true,),
           GestureDetector(
             onTap: () async {
               if(nameController.text.isEmpty){
@@ -62,7 +62,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               String name=nameController.text.toString();
               String designation=designationController.text.toString();
               String phone=phoneController.text.toString();
-              AppUser user=AppUser(id:phone,name: name,phone:phone,email: email,designation: designation,password: password,profilePic: null);
+              User user=User(id:phone,name: name,phone:phone,email: email,designation: designation,password: password,profilePic: null);
               var  status=await DatabaseService.instance.signUp(user);
               print("sucessfully returned ${status.toString()}");
               switch(status) {

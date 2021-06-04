@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:buy_book_app/Models/AppUser.dart';
+import 'package:buy_book_app/Models/User.dart';
 import 'package:buy_book_app/Models/Book.dart';
 import 'package:buy_book_app/Models/ChatMessage.dart';
 import 'package:buy_book_app/Models/Status.dart';
@@ -15,7 +15,7 @@ class DatabaseService{
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
 
-  Future<Status> signUp(AppUser user) async{
+  Future<Status> signUp(User user) async{
     DocumentSnapshot documentSnapshot=await firestore.collection("users").doc(user.id).get();
     if(documentSnapshot.exists){
       //already there is an user who use this phone number
@@ -69,7 +69,7 @@ class DatabaseService{
     }
     return Status.Failure;
   }
-  Future<bool>addUser(AppUser user) async{
+  Future<bool>addUser(User user) async{
     print("add user is in progress");
     DocumentReference usersReference = firestore.collection('users').doc(user.id);
     try{
@@ -122,6 +122,46 @@ class DatabaseService{
     });
     print("successful ");
     
+
+  }
+
+  Future<void>updateBook(Book book,File file,bool isCoverChanged)async{
+
+    final userId=await getUserId();
+    if(isCoverChanged){
+      final coverLink=await StorageService.instance.uploadCover(file, '${book.id} .jpg');
+      book.coverLink=coverLink;
+    }
+    CollectionReference userBookReference = firestore.collection('users').doc(userId).collection('books');
+    userBookReference.doc(book.id).update({
+      'id':book.id,
+      'author':book.author,
+      'title':book.title,
+      'publisher':book.publisher,
+      'genre':book.genre,
+      'edition':book.edition,
+      'language':book.language,
+      'price':book.price,
+      'ownerId':userId,
+      'coverLink':book.coverLink,
+      'numberOfPage':book.numberOfPage
+    });
+    CollectionReference booksReference = firestore.collection('books');
+    booksReference.doc(book.id).update({
+      'id':book.id,
+      'author':book.author,
+      'title':book.title,
+      'publisher':book.publisher,
+      'genre':book.genre,
+      'edition':book.edition,
+      'language':book.language,
+      'price':book.price,
+      'ownerId':userId,
+      'coverLink':book.coverLink,
+      'numberOfPage':book.numberOfPage
+    });
+    print("successful ");
+
 
   }
   Future<void>updateProfilePic(File pickedFile) async {
