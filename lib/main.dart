@@ -2,6 +2,7 @@
 import 'package:buy_book_app/Bloc/auth_bloc.dart';
 import 'package:buy_book_app/Bloc/book_bloc.dart';
 import 'package:buy_book_app/Bloc/chat_bloc.dart';
+import 'package:buy_book_app/Bloc/desk_book_bloc.dart';
 import 'package:buy_book_app/Screens/AddBookScreen.dart';
 import 'package:buy_book_app/Screens/BookDetailScreen.dart';
 import 'package:buy_book_app/Screens/ChatScreen.dart';
@@ -36,7 +37,9 @@ class MyApp extends StatelessWidget {
         providers: [
           BlocProvider<AuthBloc>(create: (context)=>AuthBloc(authenticationService:authenticationService)..add(AppStarted())),
           BlocProvider<BookBloc>(create: (context)=>BookBloc(bookDatabaseService: bookDatabaseService,authBloc: BlocProvider.of<AuthBloc>(context))..add(LoadAllBooks())),
-          BlocProvider<ChatBloc>(create: (context)=>ChatBloc(chatDatabaseService: ChatDatabaseService(),authBloc:BlocProvider.of<AuthBloc>(context),authenticationService: authenticationService))
+          BlocProvider<DeskBookBloc>(create: (context)=>DeskBookBloc(bookDatabaseService: bookDatabaseService,authBloc: BlocProvider.of<AuthBloc>(context))..add(LoadDeskBooks())),
+          BlocProvider<ChatBloc>(create: (context)=>ChatBloc(chatDatabaseService: ChatDatabaseService(),authBloc:BlocProvider.of<AuthBloc>(context),authenticationService: authenticationService)),
+
         ],
         child: MaterialApp(
           debugShowCheckedModeBanner: false,

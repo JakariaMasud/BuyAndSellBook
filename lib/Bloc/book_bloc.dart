@@ -32,15 +32,8 @@ class BookBloc extends Bloc<BookEvent, BookState> {
      _allBooksSubscription=bookDatabaseService.allBooksStream().listen((querySnapshot) {
        add(AllBookUpdated(querySnapshot.docs.map((doc) => Book.fromDocument(doc)).toList()));
      });
-   }else if (event is LoadDeskBooks){
-     _deskBooksSubscription?.cancel();
-     _deskBooksSubscription=bookDatabaseService.deskBooksStream(user.id).listen((querySnapshot) {
-       add(DeskBookUpdated(querySnapshot.docs.map((doc) => Book.fromDocument(doc)).toList()));
-     });
    }else if(event is AllBookUpdated){
      yield AllBooksLoaded(event.allBooks);
-   }else if(event is DeskBookUpdated){
-     yield DeskBooksLoaded(event.deskBooks);
    }
    else if(event is UpdateBook){
     try{

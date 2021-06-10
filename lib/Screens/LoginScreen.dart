@@ -1,11 +1,7 @@
 import 'package:buy_book_app/Bloc/auth_bloc.dart';
 import 'package:buy_book_app/Components/CustomTextField.dart';
-import 'package:buy_book_app/Models/Status.dart';
-import 'package:buy_book_app/Services/DatabaseService.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-
 import 'HomeScreen.dart';
 import 'SignUpScreen.dart';
 

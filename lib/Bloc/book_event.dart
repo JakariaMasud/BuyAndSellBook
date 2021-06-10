@@ -8,10 +8,6 @@ class LoadAllBooks extends BookEvent{
   List<Object> get props => [];
 
 }
-class LoadDeskBooks extends BookEvent{
-  @override
-  List<Object> get props => [];
-}
 class AddBook extends BookEvent {
   final Book book;
   final File pickedImage;
@@ -38,12 +34,6 @@ class AllBookUpdated extends BookEvent{
   @override
   List<Object> get props => [allBooks];
 }
-class DeskBookUpdated extends BookEvent{
-  final List<Book> deskBooks;
-  DeskBookUpdated(this.deskBooks);
 
-  @override
-  List<Object> get props => [deskBooks];
-}
 
 

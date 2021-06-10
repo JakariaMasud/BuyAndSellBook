@@ -22,13 +22,7 @@ class AllBooksLoaded extends BookState{
   // TODO: implement props
   List<Object> get props => [allBooks];
 }
-class DeskBooksLoaded extends BookState{
-  final List<Book> deskBooks;
-  DeskBooksLoaded(this.deskBooks);
-  @override
-  // TODO: implement props
-  List<Object> get props => [deskBooks];
-}
+
 
 class AddBookSuccess extends BookState{
   @override

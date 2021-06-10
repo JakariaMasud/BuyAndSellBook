@@ -1,4 +1,5 @@
 import 'package:buy_book_app/Bloc/book_bloc.dart';
+import 'package:buy_book_app/Bloc/desk_book_bloc.dart';
 import 'package:buy_book_app/Components/CustomBookList.dart';
 import 'package:buy_book_app/Components/PopUpMenu.dart';
 import 'package:buy_book_app/Models/Book.dart';
@@ -16,8 +17,6 @@ class DeskScreen extends StatefulWidget {
 class _DeskScreenState extends State<DeskScreen> {
   @override
   Widget build(BuildContext context) {
-    BlocProvider.of<BookBloc>(context).add(LoadDeskBooks());
-    print("loadDeskBooks is called");
     return Scaffold(
       appBar: AppBar(
         title: Text('My Desk'),
@@ -25,9 +24,9 @@ class _DeskScreenState extends State<DeskScreen> {
           PopUpMenu()
         ],
       ),
-      body: BlocBuilder<BookBloc,BookState>(
+      body: BlocBuilder<DeskBookBloc,DeskBookState>(
         builder: (context,state){
-          if(state is DeskBooksLoaded){
+          if(state is DeskBookLoaded){
           return CustomBookList(bookList: state.deskBooks);
           }else{
             return Container();

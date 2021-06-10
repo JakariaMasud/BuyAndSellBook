@@ -5,7 +5,6 @@ import 'package:buy_book_app/Components/HomeDrawer.dart';
 import 'package:buy_book_app/Components/PopUpMenu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class HomeScreen extends StatefulWidget {
   static final  routeName="/home";
@@ -17,8 +16,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    BlocProvider.of<BookBloc>(context).add(LoadAllBooks());
-    print("loadAllBooks is called");
     return Scaffold(
       appBar: AppBar(
         title: Text("Home"),
@@ -32,8 +29,6 @@ class _HomeScreenState extends State<HomeScreen> {
           }else{
             return Container();
           }
-
-
       }),
       drawer: HomeDrawer(),
 
